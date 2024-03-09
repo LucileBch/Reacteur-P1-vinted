@@ -13,6 +13,12 @@ app.use(express.json());
 // Creating and connecting to database
 mongoose.connect(process.env.MONGODB_URI);
 
+// Importing routes
+const userRoutes = require(`./routes/user`);
+const offerRoutes = require(`./routes/offer`);
+app.use(userRoutes);
+app.use(offerRoutes);
+
 // ---------- Routes ALL ----------
 // Exclude other path
 app.all(`*`, (req, res) => {
