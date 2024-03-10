@@ -139,5 +139,21 @@ const offersDisplay = async (req, res) => {
   }
 };
 
+// // Get offer by id
+const displayOfferById = async (req, res) => {
+  try {
+    let offerToDisplay = await Offer.findById(req.params.id)
+      .populate(`owner`, `account.username account.avatar.secure_url`)
+      .select(
+        `product_name product_description product_details product_price product_image.secure_url
+      `
+      );
+
+    res.status(200).json(offerToDisplay);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Export controllers
-module.exports = { offerPublish, offersDisplay };
+module.exports = { offerPublish, offersDisplay, displayOfferById };

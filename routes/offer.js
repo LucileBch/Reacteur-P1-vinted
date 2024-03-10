@@ -22,6 +22,8 @@ router.post(
 // ---------- Routes GET ----------
 // Display offers with Filter, Sort and Organize by query
 router.get(`/offers`, offerCtrl.offersDisplay);
+// Display offer by Id
+router.get(`/offers/:id`, offerCtrl.displayOfferById);
 
 // Export route
 module.exports = router;
