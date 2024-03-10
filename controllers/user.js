@@ -11,7 +11,8 @@ const convertToBase64 = require(`../utils/conertToBase64`);
 // Import models
 const User = require(`../models/User`);
 
-// SIGNUP function
+// ---------- POST ----------
+// Signup
 const userSignup = async (req, res) => {
   try {
     const { username, email, password, newsletter } = req.body;
@@ -68,7 +69,7 @@ const userSignup = async (req, res) => {
   }
 };
 
-// LOGIN function
+// Login
 const userLogin = async (req, res) => {
   try {
     // Excluding condition if email field is empty
