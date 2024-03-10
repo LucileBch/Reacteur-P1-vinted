@@ -1,8 +1,9 @@
 // ---------- APPLICATION ----------
-// Import packages (express, mongoose, dotenv)
+// Import packages (express, mongoose, dotenv, cloudinary)
 require("dotenv").config();
 const express = require(`express`);
 const mongoose = require(`mongoose`);
+const cloudinary = require(`cloudinary`).v2;
 
 // Create server
 const app = express();
