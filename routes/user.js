@@ -76,5 +76,40 @@ router.post(`/user/signup`, fileUpload(), async (req, res) => {
   }
 });
 
+// Login
+router.post(`/user/login`, async (req, res) => {
+  try {
+    // Excluding condition if email field is empty
+    if (!req.body.email) {
+      return res
+        .status(400)
+        .json({ message: `Please enter your email adress!` });
+    }
+
+    // Excluding condition if email field is empty
+    const userToFind = await User.findOne({ email: req.body.email });
+    if (!userToFind) {
+      return res.status(400).json({ message: `Email or password incorrect` });
+    }
+
+    // Testing password correspondance
+    const hashToCheck = SHA256(req.body.password + userToFind.salt).toString(
+      encBase64
+    );
+
+    if (hashToCheck === userToFind.hash) {
+      res.status(202).json({
+        _id: userToFind.id,
+        token: userToFind.token,
+        account: { username: userToFind.account.username },
+      });
+    } else {
+      res.status(401).json({ message: `Email or password incorrect` });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Export route
 module.exports = router;
