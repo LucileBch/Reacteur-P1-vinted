@@ -157,6 +157,60 @@ const displayOfferById = async (req, res) => {
   }
 };
 
+// ---------- PUT ----------
+// Update offer by id /!\/!\ FINIR DE GERER product_details
+const updateOffer = async (req, res) => {
+  try {
+    // Find user with token
+    const userId = await User.findOne({ token: req.user.token });
+    // Get owner'Id
+    const offerRef = await Offer.findById(req.params.id).populate(`owner`);
+    const ownerID = offerRef.owner.id;
+
+    // Excluding condition if user !== ownerId
+    if (userId.id !== ownerID) {
+      return res.status(401).json({ message: `Unauthorized` });
+    }
+
+    // Destructuring `body` parameters
+    const {
+      product_name,
+      product_description,
+      product_price,
+      product_details,
+    } = req.body;
+
+    // Testing if new image to upload
+    // Delete old image from Cloudinary
+    if (req.files.product_image) {
+      await cloudinary.uploader.destroy(offerRef.product_image.public_id);
+    }
+    // Convert new image
+    // Upload new image to cloudinary specific folder
+    const convertedFile = convertToBase64(req.files.product_image);
+    const uploadResult = await cloudinary.uploader.upload(convertedFile, {
+      folder: `vinted/offers/${offerRef.id}`,
+    });
+
+    const offerToUpdate = await Offer.findByIdAndUpdate(
+      req.params.id,
+      {
+        product_name,
+        product_description,
+        product_price,
+        //product_details, // renvoyer tous les élements, sinon écrase le tableau pour new tableau avec que le nombre d'éléments qu'il y a dans le body
+        product_image: uploadResult,
+      },
+      { new: true }
+    );
+
+    await offerToUpdate.save();
+    res.status(202).json(offerToUpdate);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // ---------- DELETE ----------
 // Delete offer by id
 const deleteOfferById = async (req, res) => {
@@ -189,5 +243,6 @@ module.exports = {
   offerPublish,
   offersDisplay,
   displayOfferById,
+  updateOffer,
   deleteOfferById,
 };

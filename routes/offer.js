@@ -11,7 +11,7 @@ const offerCtrl = require(`../controllers/offer`);
 const authentication = require(`../middleware/authentication`);
 
 // ---------- Routes POST ----------
-// Publish an offer
+// Publish offer
 router.post(
   `/offer/publish`,
   authentication,
@@ -25,8 +25,17 @@ router.get(`/offers`, offerCtrl.offersDisplay);
 // Display offer by Id
 router.get(`/offers/:id`, offerCtrl.displayOfferById);
 
+// ---------- Routes PUT ----------
+// Update offer
+router.put(
+  `/offer/update/:id`,
+  authentication,
+  fileUpload(),
+  offerCtrl.updateOffer
+);
+
 // ---------- Routes DELETE ----------
-// Delete an offer in DB and associated cloudinary path
+// Delete offer (DB & associated cloudinary path)
 router.delete(`/offer/delete/:id`, authentication, offerCtrl.deleteOfferById);
 
 // Export route
