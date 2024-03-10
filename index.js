@@ -13,6 +13,13 @@ app.use(express.json());
 // Creating and connecting to database
 mongoose.connect(process.env.MONGODB_URI);
 
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 // Importing routes
 const userRoutes = require(`./routes/user`);
 const offerRoutes = require(`./routes/offer`);
