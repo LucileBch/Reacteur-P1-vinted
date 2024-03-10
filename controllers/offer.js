@@ -9,7 +9,8 @@ const convertToBase64 = require(`../utils/conertToBase64`);
 const Offer = require(`../models/Offer`);
 const User = require(`../models/User`);
 
-// OFFERPUBLISH function
+// ---------- POST ----------
+// publish offer
 const offerPublish = async (req, res) => {
   try {
     const { title, description, price, condition, city, brand, size, color } =
@@ -84,6 +85,7 @@ const offerPublish = async (req, res) => {
   }
 };
 
+// ---------- GET ----------
 // Get all offers
 const offersDisplay = async (req, res) => {
   try {
@@ -139,7 +141,7 @@ const offersDisplay = async (req, res) => {
   }
 };
 
-// // Get offer by id
+// Get offer by id
 const displayOfferById = async (req, res) => {
   try {
     let offerToDisplay = await Offer.findById(req.params.id)
@@ -155,5 +157,37 @@ const displayOfferById = async (req, res) => {
   }
 };
 
+// ---------- DELETE ----------
+// Delete offer by id
+const deleteOfferById = async (req, res) => {
+  try {
+    // Find user with token
+    const userId = await User.findOne({ token: req.user.token });
+    // Get owner'Id
+    const offerRef = await Offer.findById(req.params.id).populate(`owner`);
+    const ownerID = offerRef.owner.id;
+
+    // Excluding condition if user !== ownerId
+    if (userId.id !== ownerID) {
+      return res.status(401).json({ message: `Unauthorized` });
+    }
+
+    // Delete offer from DB
+    const offerToDelete = await Offer.findByIdAndDelete(req.params.id);
+    // Delete image from Cloudinary
+    await cloudinary.uploader.destroy(offerToDelete.product_image.public_id);
+    // Delete empty folder from Cloudinary
+    await cloudinary.api.delete_folder(offerToDelete.product_image.folder);
+    res.status(202).json({ message: `This offer has been deleted` });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Export controllers
-module.exports = { offerPublish, offersDisplay, displayOfferById };
+module.exports = {
+  offerPublish,
+  offersDisplay,
+  displayOfferById,
+  deleteOfferById,
+};

@@ -25,5 +25,9 @@ router.get(`/offers`, offerCtrl.offersDisplay);
 // Display offer by Id
 router.get(`/offers/:id`, offerCtrl.displayOfferById);
 
+// ---------- Routes DELETE ----------
+// Delete an offer in DB and associated cloudinary path
+router.delete(`/offer/delete/:id`, authentication, offerCtrl.deleteOfferById);
+
 // Export route
 module.exports = router;
