@@ -11,7 +11,7 @@ const convertToBase64 = require(`../utils/conertToBase64`);
 // Import models
 const User = require(`../models/User`);
 
-// SINGUP function
+// SIGNUP function
 const userSignup = async (req, res) => {
   try {
     const { username, email, password, newsletter } = req.body;
