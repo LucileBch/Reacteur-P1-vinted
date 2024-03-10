@@ -84,5 +84,60 @@ const offerPublish = async (req, res) => {
   }
 };
 
+// Get all offers
+const offersDisplay = async (req, res) => {
+  try {
+    // Destructuring
+    const { title, priceMin, priceMax, sort, page } = req.query;
+
+    // Object filters for title, priceMin & priceMax queries
+    const filters = {};
+    // Conditions
+    if (title) {
+      filters.product_name = new RegExp(title, `i`);
+    }
+    if (priceMin) {
+      filters.product_price = { $gte: priceMin };
+    }
+    if (priceMax) {
+      if (priceMin) {
+        filters.product_price.$lte = priceMax;
+      } else {
+        filters.product_price = { $lte: priceMax };
+      }
+    }
+
+    // Object sorter for sort query
+    const sorter = {};
+    // Conditions
+    if (sort === `price-asc`) {
+      sorter.product_price = `asc`;
+    } else if (sort === `price-desc`) {
+      sorter.product_price = `desc`;
+    }
+
+    // variable skiper for page query
+    let skiper = 0;
+    // Conditions testing page number
+    if (page) {
+      skiper = 5 * (page - 1);
+    }
+
+    // Displaying offers (5 per page)
+    const offersToDisplay = await Offer.find(filters)
+      .sort(sorter)
+      .skip(skiper)
+      .limit(5)
+      .populate(`owner`, `account.username account.avatar.secure_url`);
+
+    // Counter of offers
+    const counter = await Offer.countDocuments(filters);
+
+    return res.status(200).json({ counter, offersToDisplay });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 // Export controllers
-module.exports = { offerPublish };
+module.exports = { offerPublish, offersDisplay };

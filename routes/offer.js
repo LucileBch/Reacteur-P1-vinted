@@ -19,5 +19,9 @@ router.post(
   offerCtrl.offerPublish
 );
 
+// ---------- Routes GET ----------
+// Display offers with Filter, Sort and Organize by query
+router.get(`/offers`, offerCtrl.offersDisplay);
+
 // Export route
 module.exports = router;
