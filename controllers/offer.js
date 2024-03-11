@@ -158,54 +158,86 @@ const displayOfferById = async (req, res) => {
 };
 
 // ---------- PUT ----------
-// Update offer by id /!\/!\ FINIR DE GERER product_details
+// Update offer by id
 const updateOffer = async (req, res) => {
   try {
     // Find user with token
     const userId = await User.findOne({ token: req.user.token });
     // Get owner'Id
-    const offerRef = await Offer.findById(req.params.id).populate(`owner`);
-    const ownerID = offerRef.owner.id;
+    const offerToUpdate = await Offer.findById(req.params.id).populate(`owner`);
+    const ownerID = offerToUpdate.owner.id;
 
     // Excluding condition if user !== ownerId
     if (userId.id !== ownerID) {
       return res.status(401).json({ message: `Unauthorized` });
     }
 
-    // Destructuring `body` parameters
-    const {
-      product_name,
-      product_description,
-      product_price,
-      product_details,
-    } = req.body;
+    // Destructuring `body` parameters (except product_details & product_image)
+    const { product_name, product_description, product_price } = req.body;
 
-    // Testing if new image to upload
-    // Delete old image from Cloudinary
-    if (req.files.product_image) {
-      await cloudinary.uploader.destroy(offerRef.product_image.public_id);
+    // if product_name
+    if (product_name) {
+      offerToUpdate.product_name = product_name;
     }
-    // Convert new image
-    // Upload new image to cloudinary specific folder
-    const convertedFile = convertToBase64(req.files.product_image);
-    const uploadResult = await cloudinary.uploader.upload(convertedFile, {
-      folder: `vinted/offers/${offerRef.id}`,
-    });
 
-    const offerToUpdate = await Offer.findByIdAndUpdate(
-      req.params.id,
-      {
-        product_name,
-        product_description,
-        product_price,
-        //product_details, // renvoyer tous les élements, sinon écrase le tableau pour new tableau avec que le nombre d'éléments qu'il y a dans le body
-        product_image: uploadResult,
-      },
-      { new: true }
-    );
+    // if product_description
+    if (product_description) {
+      offerToUpdate.product_description = product_description;
+    }
+
+    // if product_price
+    if (product_price) {
+      offerToUpdate.product_price = product_price;
+    }
+
+    // if product_image
+    if (req.files) {
+      // Delete old image from Cloudinary
+      // Convert new image
+      // Upload new image to cloudinary specific folder
+      await cloudinary.uploader.destroy(offerToUpdate.product_image.public_id);
+      const convertedFile = convertToBase64(req.files.product_image);
+      const uploadResult = await cloudinary.uploader.upload(convertedFile, {
+        folder: `vinted/offers/${offerToUpdate.id}`,
+      });
+      offerToUpdate.product_image = uploadResult;
+    }
+
+    // if product_details : browse product_details array
+    const details = offerToUpdate.product_details;
+
+    for (let i = 0; i < details.length; i++) {
+      if (details[i].MARQUE) {
+        if (req.body.MARQUE) {
+          details[i].MARQUE = req.body.MARQUE;
+        }
+      }
+      if (details[i].TAILLE) {
+        if (req.body.TAILLE) {
+          details[i].TAILLE = req.body.TAILLE;
+        }
+      }
+      if (details[i].ETAT) {
+        if (req.body.ETAT) {
+          details[i].ETAT = req.body.ETAT;
+        }
+      }
+      if (details[i].COULEUR) {
+        if (req.body.COULEUR) {
+          details[i].COULEUR = req.body.COULEUR;
+        }
+      }
+      if (details[i].EMPLACEMENT) {
+        if (req.body.EMPLACEMENT) {
+          details[i].EMPLACEMENT = req.body.EMPLACEMENT;
+        }
+      }
+    }
+    // Ensure update with markModified()
+    offerToUpdate.markModified(`product_details`);
 
     await offerToUpdate.save();
-    res.status(202).json(offerToUpdate);
+    res.status(200).json(offerToUpdate);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
