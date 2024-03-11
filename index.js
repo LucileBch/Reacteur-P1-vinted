@@ -30,6 +30,11 @@ app.use(userRoutes);
 app.use(offerRoutes);
 
 // ---------- Routes ALL ----------
+// Welcome Route
+app.get(`/`, (req, res) => {
+  res.status(200).json({ message: `Welcome to my Vinted server` });
+});
+
 // Exclude other path
 app.all(`*`, (req, res) => {
   res.status(404).json({ message: `This route does not exist` });
