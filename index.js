@@ -2,13 +2,15 @@
 // Import packages (express, mongoose, dotenv, cloudinary)
 require("dotenv").config();
 const express = require(`express`);
+const cors = require(`cors`);
 const mongoose = require(`mongoose`);
 const cloudinary = require(`cloudinary`).v2;
 
 // Create server
 const app = express();
 
-// Enable JSON format
+// Enable JSON format and Cross-Origin request
+app.use(cors());
 app.use(express.json());
 
 // Creating and connecting to database
