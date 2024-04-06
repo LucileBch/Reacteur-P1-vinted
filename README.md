@@ -4,14 +4,13 @@
 
 **Vinted Backend** made in context of training at [@Le Reacteur](https://github.com/lereacteur) bootcamp.
 
-Hosted on Netlify : https://reacteur-training-tripadvisor.netlify.app/
-
 - [x] **Node JS**
 - [x] **Mongo DB**
 - [x] **Express**
 - [x] Frontend **React** : https://github.com/LucileBch/Reacteur-P1-vinted-front.git -- TO BE CONNECTED
 
-Hosted on NorthFlank : https://site--backend-vinted--mrqlhtl4f2zp.code.run/
+Front Hosted on Netlify : https://reacteur-training-vinted.netlify.app/
+Backend Hosted on NorthFlank : https://site--backend-vinted--mrqlhtl4f2zp.code.run/
 
 ## Routes
 
